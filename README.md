@@ -1,0 +1,4 @@
+-in this project an api is built for creating,updating,deleting and retreiving the blogs
+-express app is used to built apis
+-data is stored in mongodb database, which is document based, nosql database
+- supertest and node's native assert ,test module are used to test various aspects of apis.
