@@ -1,0 +1,31 @@
+
+GET http://localhost:3003/api/Blogs
+
+### 
+PUT http://localhost:3003/api/blogs/69e656b26d008bb114a2dba8
+Content-Type: application/json
+
+{   "title": "Go Set a Watchman", 
+    "author": "Harper lee",
+    "url":"https://www.bibliofreak.net/2016/08/review-go-set-watchman-by-harper-lee.html",
+    "likes":6
+}
+
+
+### 
+GET http://localhost:3003/api/blogs/69e856922f6fa2f182814a78
+
+### 
+DELETE http://localhost:3003/api/blogs/
+
+###
+POST http://localhost:3003/api/blogs  HTTP/1.1 
+Content-Type: application/json
+
+{
+    
+    "author": "Lemn sessay",
+    "url": "https://www.bibliofreak.net/2021/09/review-my-name-is-why-by-lemn-sissay.html",
+    "likes": 10
+    
+  }
