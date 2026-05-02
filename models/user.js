@@ -1,15 +1,18 @@
 const mongoose=require('mongoose')
+const uniqueValidator=require('mongoose-unique-validator')
 
 const userSchema=new mongoose.Schema({
   userName:{
     type:String,
     required:true,
+    unique:true
+    
   },
   name:String,
   passwordHash:{
     type:String,
     required:true,
-    maxLength:[6,'passwoord length is shorter than required']
+    minLength:[6,'password length is shorter than required']
   
   },
   blog:[{
@@ -17,6 +20,17 @@ const userSchema=new mongoose.Schema({
     ref:'Blog'
   }]
 })
+
+
+
+userSchema.path('userName').validate(async function (value) {
+  // Use countDocuments
+  const count = await this.model('User').countDocuments({ userName: value }); 
+  return !count;
+}, 'User already exists');
+
+
+
 
 userSchema.set('toJSON',{
   transform:(document,returnedObject)=>{
@@ -27,4 +41,4 @@ userSchema.set('toJSON',{
   }
 })
 
-module.exports=mongoose.model('User',userSchema)
+module.exports=mongoose.model('User', userSchema)
