@@ -40,11 +40,11 @@ blogRouter.post('/', async (req,res) => {
   console.log(req.token)
   const decodedToken=jwt.verify(req.token,process.env.SEKRET)
   if(!decodedToken.id){
-    return res.status(401).send({error:'invalid token'})
+    return res.status(401).send({ error:'invalid token' })
   }
   const user=await User.findById(decodedToken.id)
   if(!user){
-    return res.status(400).json({error:'userId missing or invalid'})
+    return res.status(400).json({ error:'userId missing or invalid' })
   }
   if(!body.title || !body.url){
     return res.status(400).end()
@@ -53,7 +53,7 @@ blogRouter.post('/', async (req,res) => {
   if(!body.likes){
     body.likes=0
   }
-  const blog=new Blog({...body,user:user._id})
+  const blog=new Blog({ ...body,user:user._id })
   const savedBlog=await blog.save()
   user.blogs=user.blogs.concat(savedBlog._id)
   await user.save()
