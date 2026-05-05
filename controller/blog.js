@@ -37,7 +37,6 @@ blogRouter.put('/:id', async(req,res) => {
 
 blogRouter.post('/', async (req,res) => {
   const body=req.body
-  console.log(req.token)
   const decodedToken=jwt.verify(req.token,process.env.SEKRET)
   if(!decodedToken.id){
     return res.status(401).send({ error:'invalid token' })
@@ -62,9 +61,20 @@ blogRouter.post('/', async (req,res) => {
 })
 
 blogRouter.delete('/:id', async(req,res) => {
-  await Blog.findByIdAndDelete(req.params.id)
-  res.status(204).end()
+  const blog=await Blog.findById(req.params.id)
+  const decodedToken=jwt.verify(req.token,process.env.SEKRET)
+  if(!decodedToken.id){
+    return res.status(400).json({error:'invalid token'})
+  }
 
+  if(decodedToken.id!==blog.user.toString()){
+    return res.status(401).send({error:'unauthorized operation'})
+  }
+
+  if(decodedToken.id===blog.user.toString()){
+    await Blog.findByIdAndDelete(req.params.id)
+    return res.status(204).end()
+  }
 })
 
 module.exports=blogRouter
