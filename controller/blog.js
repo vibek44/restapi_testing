@@ -4,6 +4,7 @@ const  mongoose  = require('mongoose')
 const Blog=require('../models/blog')
 const User=require('../models/user')
 const jwt=require('jsonwebtoken')
+const {userExtractor}=require('../utilities/middleware')
 
 blogRouter.get('/', async (req,res) => {
   const blogs=await Blog.find({}).populate('user', { userName:1, name:1 })
@@ -35,16 +36,9 @@ blogRouter.put('/:id', async(req,res) => {
 })
 
 
-blogRouter.post('/', async (req,res) => {
+blogRouter.post('/',userExtractor, async (req,res) => {
   const body=req.body
-  const decodedToken=jwt.verify(req.token,process.env.SEKRET)
-  if(!decodedToken.id){
-    return res.status(401).send({ error:'invalid token' })
-  }
-  const user=await User.findById(decodedToken.id)
-  if(!user){
-    return res.status(400).json({ error:'userId missing or invalid' })
-  }
+  const user=req.user
   if(!body.title || !body.url){
     return res.status(400).end()
   }
@@ -60,18 +54,16 @@ blogRouter.post('/', async (req,res) => {
 
 })
 
-blogRouter.delete('/:id', async(req,res) => {
+blogRouter.delete('/:id',userExtractor ,async(req,res) => {
+  const user=req.user
   const blog=await Blog.findById(req.params.id)
-  const decodedToken=jwt.verify(req.token,process.env.SEKRET)
-  if(!decodedToken.id){
-    return res.status(400).json({error:'invalid token'})
-  }
+  
 
-  if(decodedToken.id!==blog.user.toString()){
+  if(user.id.toString()!==blog.user.toString()){
     return res.status(401).send({error:'unauthorized operation'})
   }
 
-  if(decodedToken.id===blog.user.toString()){
+  if(user.id.toString()===blog.user.toString()){
     await Blog.findByIdAndDelete(req.params.id)
     return res.status(204).end()
   }
