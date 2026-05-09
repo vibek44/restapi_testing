@@ -1,5 +1,5 @@
 const mongoose=require('mongoose')
-const uniqueValidator=require('mongoose-unique-validator')
+//const uniqueValidator=require('mongoose-unique-validator')
 
 
 const userSchema=new mongoose.Schema({
@@ -12,8 +12,8 @@ const userSchema=new mongoose.Schema({
   passwordHash:{
     type:String,
     required:true,
-    minLength:[6,'password length is shorter than required']
-  
+    minLength:[3,'password length is shorter than required']
+
   },
   blogs:[{
     type:mongoose.Schema.Types.ObjectId,
@@ -22,13 +22,13 @@ const userSchema=new mongoose.Schema({
 })
 /*
 userSchema.path('userName').validate(async function (value) {
-  const count = await this.model('User').countDocuments({ userName: value }); 
+  const count = await this.model('User').countDocuments({ userName: value });
   return !count;
 }, 'User already exists');
 */
 
 userSchema.set('toJSON',{
-  transform:(document,returnedObject)=>{
+  transform:(document,returnedObject) => {
     returnedObject.id=returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
