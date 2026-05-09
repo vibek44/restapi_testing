@@ -4,11 +4,10 @@ const  mongoose  = require('mongoose')
 const Blog=require('../models/blog')
 const User=require('../models/user')
 const jwt=require('jsonwebtoken')
-const {userExtractor}=require('../utilities/middleware')
+const { userExtractor }=require('../utilities/middleware')
 
 blogRouter.get('/', async (req,res) => {
   const blogs=await Blog.find({}).populate('user', { userName:1, name:1 })
-  //console.log(req.get('authorization'))
   res.json(blogs)
 })
 
@@ -21,10 +20,15 @@ blogRouter.get('/:id', async (req,res) => {
   }
 })
 
-blogRouter.put('/:id', async(req,res) => {
-  const blog=await Blog.findById( req.params.id )
+blogRouter.put('/:id',userExtractor ,async(req,res) => {
+  const blog=await Blog.findById(req.params.id)
+  const user=req.user
+
   if(!blog){
     return res.status(404).end()
+  }
+  if(blog.user.toString()!==user._id.toString()){
+    return res.status(401).json({ error:'unauthorized user' })
   }
   blog.title=req.body.title
   blog.url=req.body.url
@@ -57,16 +61,19 @@ blogRouter.post('/',userExtractor, async (req,res) => {
 blogRouter.delete('/:id',userExtractor ,async(req,res) => {
   const user=req.user
   const blog=await Blog.findById(req.params.id)
-  
+  if(!blog){
 
+    return res.status(400).json({ error:'Bad Request' })
+  }
   if(user.id.toString()!==blog.user.toString()){
-    return res.status(401).send({error:'unauthorized operation'})
+    return res.status(401).send({ error:'unauthorized operation' })
   }
+  user.blogs=user.blogs.filter(blog => blog.toString()!==req.params.id)
+  await user.save()
+  await Blog.findByIdAndDelete(req.params.id)
 
-  if(user.id.toString()===blog.user.toString()){
-    await Blog.findByIdAndDelete(req.params.id)
-    return res.status(204).end()
-  }
+  return res.status(204).end()
+
 })
 
 module.exports=blogRouter

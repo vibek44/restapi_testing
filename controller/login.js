@@ -6,7 +6,7 @@ const loginRouter=require('express').Router()
 loginRouter.post('/', async(req,res) => {
   const { userName,password }=req.body
   if( !userName || !password || !(userName.length>=3) || !(password.length>=3)){
-    return res.status(400).json({error:'invalid username or password'})
+    return res.status(400).json({ error:'invalid username or password' })
   }
   const user=await User.findOne({ userName })
   const passwordCorrect=user===null
