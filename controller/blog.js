@@ -27,15 +27,18 @@ blogRouter.put('/:id',userExtractor ,async(req,res) => {
   if(!blog){
     return res.status(404).end()
   }
+  /*
   if(blog.user.toString()!==user._id.toString()){
     return res.status(401).json({ error:'unauthorized user' })
   }
+  */
   blog.title=req.body.title
   blog.url=req.body.url
   blog.likes=req.body.likes
   blog.author=req.body.author
 
   const updatedBlog=await blog.save()
+  
   res.json(updatedBlog)
 })
 
