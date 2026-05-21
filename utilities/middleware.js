@@ -12,19 +12,14 @@ const getToken=(req,res,next) => {
 }
 
 const userExtractor=async (req,res,next) => {
-
   const decodedToken=jwt.verify(req.token,process.env.SEKRET)
-  //console.log('from tokenextrac', decodedToken)
   if(!(decodedToken.id)){
     return res.status(401).json({ error:'invalid token' })
   }
-
   const user=await User.findById(decodedToken.id)
-  //console.log('from userextr', user)
   if(!user){
     return res.status(400).json({ error:'invalid user' })
   }
-
   req.user=user
   next()
 }
@@ -34,7 +29,6 @@ const unKnownEndPoint=(req,res,next) => {
 }
 
 const errorHandler = (error,req,res,next) => {
-  //console.log(error,error)
 
   if(error.name==='CastError'){
     return res.status(400).send( { error:'CastError!! invalid id!!' })
