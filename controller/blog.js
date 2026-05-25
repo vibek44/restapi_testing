@@ -22,8 +22,9 @@ blogRouter.get('/:id', async (req,res) => {
 
 blogRouter.put('/:id',userExtractor, async(req,res) => {
   const body=req.body
+  console.log(body)
   const blog=await Blog.findById(req.params.id)
-  
+  console.log(req.user)
   if(!blog){
     return res.status(404).end()
   }
@@ -40,11 +41,10 @@ blogRouter.put('/:id',userExtractor, async(req,res) => {
     author:updatedBlog.author,
     url:updatedBlog.url,
     likes:updatedBlog.likes,
-    user:{userName:body.user.userName,name:body.user.name,id:body.id}
+    user:{userName:body.user.userName,name:body.user.name,id:body.user.id}
     
   })
 })
-
 
 blogRouter.post('/',userExtractor, async (req,res) => {
   const body=req.body
@@ -74,7 +74,6 @@ blogRouter.post('/',userExtractor, async (req,res) => {
 
 blogRouter.delete('/:id',userExtractor ,async(req,res) => {
   const user=req.user
-  //console.log('from rou',user)
   const blog=await Blog.findById(req.params.id)
   if(!blog){
     return res.status(400).json({ error:'Bad Request' })
